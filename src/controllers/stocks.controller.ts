@@ -48,7 +48,11 @@ const buyStocks = async (req: Request, res: Response) => {
     if (user.cash >= totalCost) {
       await prisma.user.update({
         where: { id: user.id },
-        data: { cash: user.cash - totalCost },
+        data: {
+          cash: {
+            decrement: totalCost,
+          },
+        },
       });
 
       await prisma.transaction.create({
@@ -68,10 +72,10 @@ const buyStocks = async (req: Request, res: Response) => {
         },
       });
 
-      const totalStocksBought = transactions.reduce(
-        (acc, curr) => acc + curr.quantity,
-        0
-      );
+      const totalStocksBought = transactions.reduce((acc, curr) => {
+        if (curr.type === "sell") return acc - curr.quantity;
+        return acc + curr.quantity;
+      }, 0);
 
       // Update user_stocks table (or create a new record if the user doesn't own any of the stock)
       const userStocks = await prisma.userStock.findMany({
