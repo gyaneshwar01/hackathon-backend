@@ -11,11 +11,35 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  fullName String
-  password String
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  fullName     String
+  password     String
+  cash         Float         @default(50000.00)
+  user_stocks  UserStock[]
+  transactions Transaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model UserStock {
+  id       Int    @id @default(autoincrement())
+  symbol   String @unique
+  quantity Int
+
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+}
+
+model Transaction {
+  id       Int      @id @default(autoincrement())
+  symbol   String
+  type     String
+  price    Float
+  quantity Int
+  date     DateTime @default(now())
+
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
 }

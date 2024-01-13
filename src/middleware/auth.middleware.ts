@@ -34,7 +34,7 @@ const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
     delete user.password;
 
     // if the token is valid, proceed
-    req.body.user = user;
+    req.body.userId = user.id;
 
     next();
   } catch (err) {
